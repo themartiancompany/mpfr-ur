@@ -144,7 +144,7 @@ if (( "${_patchver}" == 0 )); then
 else
   pkgver="${_pkgver}.p${_patchver}"
 fi
-pkgrel=3
+pkgrel=4
 _pkgdesc=(
   'Multiple-precision floating-point library'
 )
@@ -204,6 +204,13 @@ _bundle_sum="aa923bdf90f3e4a569f66943ea483b98f075a7bc44de6405a7511bfb0ee7f427"
 _bundle_sig_sum="bf4e7a1574147cea78d7c0e82a17eb974c48cb2aa82773f24ed190f1632cbd4d"
 _4_2_2_bundle_sum="66d10959e5ec4e13773248a10a5657d0606fff018877ec9057d47a1be2fd1ca3"
 _4_2_2_bundle_sig_sum="d9d9c6046c9076f2af622216f43fdc298af28ad7e5e8db4de931509a47b8166c"
+_gnu_sum="b67ba0383ef7e8a8563734e2e889ef5ec3c3b898a01d00fa0a6869ad81c6ce01"
+if [[ "${_ns}" == "gnu" ]]; then
+  _gnu_sig_sum="c63aa4c8a9e678b235e6bdeba3d79f0c0d35c355129ef478a5050655e636bfaa"
+  _gnu_sig_sum="SKIP"
+elif [[ "${_ns}" == "themartiancompany" ]]; then
+  _gnu_sig_sum=""
+fi
 _gnu_sum="SKIP"
 if [[ ! -v "_tag" ]]; then
   if [[ "${_git}" == "false" ]]; then
@@ -258,11 +265,18 @@ elif [[ "${_evmfs}" == "false" ]]; then
       _sum="${_gnu_sum}"
       _sig_src="${_tarfile}.sig::${_uri}.sig"
       _sig_sum="SKIP"
-      source+=(
-        "${_sig_src}"
+      sha512sums=(
+        'eb9e7f51b5385fb349cc4fba3a45ffdf0dd53be6dfc74932dc01258158a10514667960c530c47dd9dfc5aa18be2bd94859d80499844c5713710581e6ac6259a9'
+        'SKIP'
       )
-      sha256sums+=(
-        "${_sig_sum}"
+      b2sums=(
+        '6bbf5658e70fbb673a3b65246a6bac708d1571aa6943c6742efd92f468ac71e6f0fe351b757f7133440ea312d9a5fc3549acd89d54f4d975c58bdc204d7b21ec'
+        'SKIP'
+      )
+      validpgpkeys=(
+        # Vincent Lefevre <vincent@vinc17.net>
+        '07F3DBBECC1A39605078094D980C197698C3739D'
+        'A534BE3F83E241D918280AEB5831D11A0D4DB02A'
       )
     elif [[ "${_ns}" == "themartiancompany" ]]; then
       if [[ "${_git_service}" == "github" ]]; then
@@ -278,24 +292,6 @@ elif [[ "${_evmfs}" == "false" ]]; then
     fi
     _src="${_tarfile}::${_uri}"
   fi
-fi
-if [[ "${_ns}" == "gnu" ]]; then
-  source=(
-    "https://ftp.gnu.org/gnu/${_pkg}/${_pkg}-${_pkgver}.tar.xz"{"",".sig"}
-)
-  sha512sums=(
-    'eb9e7f51b5385fb349cc4fba3a45ffdf0dd53be6dfc74932dc01258158a10514667960c530c47dd9dfc5aa18be2bd94859d80499844c5713710581e6ac6259a9'
-    'SKIP'
-  )
-  b2sums=(
-    '6bbf5658e70fbb673a3b65246a6bac708d1571aa6943c6742efd92f468ac71e6f0fe351b757f7133440ea312d9a5fc3549acd89d54f4d975c58bdc204d7b21ec'
-    'SKIP'
-  )
-  validpgpkeys=(
-    # Vincent Lefevre <vincent@vinc17.net>
-    '07F3DBBECC1A39605078094D980C197698C3739D'
-    'A534BE3F83E241D918280AEB5831D11A0D4DB02A'
-  )
 fi
 source+=(
   "${_src}"
