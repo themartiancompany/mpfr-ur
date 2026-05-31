@@ -193,7 +193,7 @@ if [[ ! -v "_tag" ]]; then
       fi
     fi
   elif [[ "${_git}" == "true" ]]; then
-    _tag="${_commit}"
+    _tag="${_bundle_commit}"
   fi
 fi
 _tarname="${_pkg}-${_tag}"
@@ -206,7 +206,7 @@ _evmfs_dir="evmfs://${_evmfs_network}/${_evmfs_address}/${_evmfs_ns}"
 _evmfs_uri="${_evmfs_dir}/${_bundle_sum}"
 _evmfs_src="${_tarfile}::${_evmfs_uri}"
 _4_2_2_bundle_uri="${_evmfs_dir}/${_4_2_2_bundle_sum}"
-_4_2_2_bundle_src="${_bundle_tag_file}::${_4_2_2_bundle_uri}"
+_4_2_2_bundle_src="${_4_2_2_bundle_file}::${_4_2_2_bundle_uri}"
 _sig_uri="${_evmfs_dir}/${_bundle_sig_sum}"
 _sig_src="${_tarfile}.sig::${_sig_uri}"
 _4_2_2_bundle_sig_uri="${_evmfs_dir}/${_4_2_2_bundle_sum}"
@@ -217,12 +217,10 @@ if [[ "${_evmfs}" == "true" ]]; then
     _sum="${_bundle_sum}"
     _sig_sum="${_bundle_sig_sum}"
     source+=(
-      "${_sig_src}"
       "${_4_2_2_bundle_src}"
       "${_4_2_2_bundle_sig_src}"
     )
     sha256sums+=(
-      "${_bundle_sig_sum}"
       "${_4_2_2_bundle_sum}"
       "${_4_2_2_bundle_sig_sum}"
     )
@@ -279,11 +277,11 @@ if [[ "${_ns}" == "gnu" ]]; then
     'A534BE3F83E241D918280AEB5831D11A0D4DB02A'
   )
 fi
-source=(
+source+=(
   "${_src}"
   "${_sig_src}"
 )
-sha256sums=(
+sha256sums+=(
   "${_sum}"
   "${_sig_sum}"
 )
