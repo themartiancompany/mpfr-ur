@@ -131,7 +131,10 @@ if [[ ! -v "_archive_format" ]]; then
   fi
 fi
 _pkg=mpfr
-pkgname="${_pkg}"
+pkgbase="${_pkg}"
+pkgname=(
+  "${_pkg}"
+)
 _pkgver=4.2.2
 _bundle_commit="839a2709425ce5fa60dd5806f44f5548d7eda99e"
 _commit="736ef3903ce50fc592268f69b6895c73da6adfb4" 
@@ -141,7 +144,7 @@ if (( "${_patchver}" == 0 )); then
 else
   pkgver="${_pkgver}.p${_patchver}"
 fi
-pkgrel=2
+pkgrel=3
 _pkgdesc=(
   'Multiple-precision floating-point library'
 )
