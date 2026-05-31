@@ -144,7 +144,7 @@ if (( "${_patchver}" == 0 )); then
 else
   pkgver="${_pkgver}.p${_patchver}"
 fi
-pkgrel=4
+pkgrel=5
 _pkgdesc=(
   'Multiple-precision floating-point library'
 )
