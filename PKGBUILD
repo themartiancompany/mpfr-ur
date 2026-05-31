@@ -133,7 +133,8 @@ fi
 _pkg=mpfr
 pkgname="${_pkg}"
 _pkgver=4.2.2
-_commit="839a2709425ce5fa60dd5806f44f5548d7eda99e"
+_bundle_commit="839a2709425ce5fa60dd5806f44f5548d7eda99e"
+_commit="736ef3903ce50fc592268f69b6895c73da6adfb4" 
 _patchver=0
 if (( "${_patchver}" == 0 )); then
   pkgver="${_pkgver}"
@@ -180,7 +181,9 @@ fi
 # Tallero
 _evmfs_ns="0x6ec7cC56dCeC0a00CB15E97C64B1a5Ec7A31403c"
 _bundle_sum="aa923bdf90f3e4a569f66943ea483b98f075a7bc44de6405a7511bfb0ee7f427"
-_bundle_sum="bf4e7a1574147cea78d7c0e82a17eb974c48cb2aa82773f24ed190f1632cbd4d"
+_bundle_sig_sum="bf4e7a1574147cea78d7c0e82a17eb974c48cb2aa82773f24ed190f1632cbd4d"
+_4_2_2_bundle_sum="66d10959e5ec4e13773248a10a5657d0606fff018877ec9057d47a1be2fd1ca3"
+_4_2_2_bundle_sig_sum="d9d9c6046c9076f2af622216f43fdc298af28ad7e5e8db4de931509a47b8166c"
 _gnu_sum="SKIP"
 if [[ ! -v "_tag" ]]; then
   if [[ "${_git}" == "false" ]]; then
@@ -195,13 +198,19 @@ if [[ ! -v "_tag" ]]; then
 fi
 _tarname="${_pkg}-${_tag}"
 _tarfile="${_tarname}.${_archive_format}"
+_4_2_2_bundle_name="${_pkg}-${_bundle_commit}..${_commit}"
+_4_2_2_bundle_file="${_4_2_2_bundle_name}.${_archive_format}"
 _evmfs_network="100"
 _evmfs_address="0x69470b18f8b8b5f92b48f6199dcb147b4be96571"
 _evmfs_dir="evmfs://${_evmfs_network}/${_evmfs_address}/${_evmfs_ns}"
 _evmfs_uri="${_evmfs_dir}/${_bundle_sum}"
 _evmfs_src="${_tarfile}::${_evmfs_uri}"
+_4_2_2_bundle_uri="${_evmfs_dir}/${_4_2_2_bundle_sum}"
+_4_2_2_bundle_src="${_bundle_tag_file}::${_4_2_2_bundle_uri}"
 _sig_uri="${_evmfs_dir}/${_bundle_sig_sum}"
 _sig_src="${_tarfile}.sig::${_sig_uri}"
+_4_2_2_bundle_sig_uri="${_evmfs_dir}/${_4_2_2_bundle_sum}"
+_4_2_2_bundle_sig_src="${_4_2_2_bundle_file}.sig::${_4_2_2_bundle_sig_uri}"
 if [[ "${_evmfs}" == "true" ]]; then
   if [[ "${_git}" == "true" ]]; then
     _src="${_evmfs_src}"
@@ -209,9 +218,13 @@ if [[ "${_evmfs}" == "true" ]]; then
     _sig_sum="${_bundle_sig_sum}"
     source+=(
       "${_sig_src}"
+      "${_4_2_2_bundle_src}"
+      "${_4_2_2_bundle_sig_src}"
     )
     sha256sums+=(
       "${_bundle_sig_sum}"
+      "${_4_2_2_bundle_sum}"
+      "${_4_2_2_bundle_sig_sum}"
     )
   fi
 elif [[ "${_evmfs}" == "false" ]]; then
@@ -275,11 +288,77 @@ sha256sums=(
   "${_sig_sum}"
 )
 
+_git_unbundle() {
+  local \
+    _tarname="${1}" \
+    _bundle \
+    _repo \
+    _msg=()
+  _bundle="${srcdir}/${_tarname}.bundle"
+  _repo="${srcdir}/${_tarname}"
+  _msg=(
+    "Cloning '${_bundle}' into '${_repo}'."
+  )
+  msg \
+    "${_msg[*]}"
+  git \
+    clone \
+      "${_bundle}" \
+      "${_repo}" || \
+  git \
+    -C \
+      "${_repo}" \
+      pull || \
+  true
+}
+
+_git_unbundle_update() {
+  local \
+    _repo="${1}" \
+    _bundle="${2}" \
+    _repo \
+    _msg=()
+  _bundle_name="$(
+    basename \
+      "${_bundle}")"
+  _msg=(
+    "Updating '${_repo}' from '${_bundle}'."
+  )
+  msg \
+    "${_msg[*]}"
+  git \
+    -C \
+      "${_repo}" \
+      remote \
+        add \
+          "${_bundle_name}" \
+          "${_bundle}" ||
+  true
+  git \
+    -C \
+      "${_repo}" \
+    pull \
+      "${_bundle_name}" || \
+  true
+}
+
 prepare() {
   local \
     _src
+  if [[ "${_evmfs}" == "true" ]]; then
+    if [[ "${_git}" == "false" ]]; then
+      ur \
+        "${_like}"
+    elif [[ "${_git}" == "true" ]]; then
+      _git_unbundle \
+        "${_tarname}"
+      _git_unbundle_update \
+        "${srcdir}/${_tarname}" \
+        "${srcdir}/${_4_2_2_bundle_file}"
+    fi
+  fi
   cd \
-    "${pkgname}-${_pkgver}"
+    "${_tarname}"
   for _src in "${source[@]}"; do
     [[ "${_src}" == *.diff ]] || \
     [[ "${_src}" == *.patch ]] || \
