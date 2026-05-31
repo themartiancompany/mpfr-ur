@@ -144,7 +144,7 @@ if (( "${_patchver}" == 0 )); then
 else
   pkgver="${_pkgver}.p${_patchver}"
 fi
-pkgrel=5
+pkgrel=6
 _pkgdesc=(
   'Multiple-precision floating-point library'
 )
@@ -175,6 +175,7 @@ provides=(
   "lib${_pkg}.so"
 )
 makedepends=(
+  "autoconf"
   "automake"
   "make"
   "${_compiler}"
