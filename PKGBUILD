@@ -141,24 +141,41 @@ if (( "${_patchver}" == 0 )); then
 else
   pkgver="${_pkgver}.p${_patchver}"
 fi
-pkgrel=1
+pkgrel=2
 _pkgdesc=(
   'Multiple-precision floating-point library'
 )
 pkgdesc="${_pkgdesc[*]}"
-arch=(x86_64)
+arch=(
+  "aarch64"
+  "arm"
+  "armv8l"
+  "armv7l"
+  "i686"
+  "mips"
+  "pentium4"
+  "powerpc"
+  "x86_64"
+)
 url="https://www.${_pkg}.org"
 license=(
   "GPL-3.0-or-later"
   "LGPL-3.0-or-later"
 )
 depends=(
-  "glibc"
+  "${_libc}"
+  "${_libcompiler}"
   "gmp"
 )
 provides=(
   "lib${_pkg}=${pkgver}"
   "lib${_pkg}.so"
+)
+makedepends=(
+  "automake"
+  "make"
+  "${_compiler}"
+  "${_libcompiler}"
 )
 if [[ "${_os}" == "Msys" ]]; then
   makedepends+=(
@@ -381,7 +398,7 @@ build() {
     --enable-shared
   )
   cd \
-    "${pkgname}-${_pkgver}"
+    "${_tarname}"
   ./configure \
     "${_configure_opts[@]}"
   make
@@ -389,7 +406,7 @@ build() {
 
 check() {
   cd \
-    "${pkgname}-${_pkgver}"
+    "${_tarname}"
   make \
     check
   make \
@@ -403,7 +420,7 @@ package() {
     DESTDIR="${pkgdir}"
   )
   cd \
-    "${pkgname}-${_pkgver}"
+    "${_tarname}"
   make \
     "${_make_opts[@]}" \
     install
